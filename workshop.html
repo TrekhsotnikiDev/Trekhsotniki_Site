@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мастерская | Trehsotniki</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Доп. стили для скрытия веток */
+        .tree-branch { display: none; gap: 80px; padding-left: 50px; animation: fadeIn 0.5s; padding-right: 100px; }
+        .tree-branch.active { display: flex; }
+    </style>
+</head>
+<body style="overflow-y: hidden;"> 
+
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <div class="top-left-links">
+                <a href="https://store.steampowered.com/app/552100/Brick_Rigs/" target="_blank"><img src="img/br_logo.png" class="steam-logo"></a>
+                <a href="store.html">Премиум магазин</a>
+                <a href="support.html">Центр поддержки</a>
+                <a href="https://discord.gg/8zg4FYbn" target="_blank"><img src="img/icons8-discord-48.png" class="discord-logo"></a>
+            </div>
+            <div class="top-right-stats">
+                <a href="profile.html">Моя техника</a>
+                <a href="profile.html">Профиль</a>
+                <div class="stat"><img src="img/gold_ico.jpg"> <span id="user-gold">999,999</span></div>
+                <div class="stat"><img src="img/xp_ico.png"> <span id="user-xp">45,000</span></div>
+            </div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand-zone">
+                <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:15px; color:inherit;">
+                    <img src="img/trehsotniki_logo.png" class="main-logo">
+                    <span class="brand-name">TREHSOTNIKI</span>
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <div class="nav-item">
+                    <span>ПРОЕКТ</span> <img src="img/menu_arrow.png" class="arrow">
+                    <div class="dropdown">
+                        <a href="news.html">Новости</a>
+                        <a href="maps.html">Карты</a>
+                        <a href="workshop.html">Мастерская</a>
+                        <a href="https://drive.google.com/drive/folders/13dSwBa0I4KRNHFESoOlXxc-BbAD4x64F" target="_blank" style="color: #00C851;">Скачать моды</a>
+                    </div>
+                </div>
+
+                <div class="nav-item">
+                    <span>РУКОВОДСТВА</span> <img src="img/menu_arrow.png" class="arrow">
+                    <div class="dropdown">
+                        <a href="newbie.html">Новичку</a>
+                        <a href="economy.html">Экономика</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="auth-buttons">
+                <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
+                <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="workshop-wrapper">
+        
+        <div class="class-tabs">
+            <button class="tab-btn active" onclick="filterTree('heavy', this)">ТЯЖЕЛЫЕ</button>
+            <button class="tab-btn" onclick="filterTree('medium', this)">СРЕДНИЕ</button>
+            <button class="tab-btn" onclick="filterTree('light', this)">ЛЕГКИЕ</button>
+            <button class="tab-btn" onclick="filterTree('td', this)">ПТ-САУ</button>
+        </div>
+
+        <div class="tree-container">
+            
+            <div class="tree-branch active" id="branch-heavy">
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ I</div>
+                    <div class="tank-node unlocked" onclick="openTankInfo('kv1')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">КВ-1</span><span class="node-price">ИЗУЧЕНО</span></div>
+                        <div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ II</div>
+                    <div class="tank-node can-research" onclick="openTankInfo('kv85')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">КВ-85</span><span class="node-price">12,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ III</div>
+                    <div class="tank-node locked" onclick="openTankInfo('is1')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">ИС-1</span><span class="node-price">45,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ IV</div>
+                    <div class="tank-node locked" onclick="openTankInfo('is2')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">ИС-2</span><span class="node-price">80,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ V</div>
+                    <div class="tank-node locked" onclick="openTankInfo('is3')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">ИС-3</span><span class="node-price">150,000 XP</span></div>
+                        <div class="connector-left"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tree-branch" id="branch-medium">
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ I</div>
+                    <div class="tank-node unlocked" onclick="openTankInfo('t34_76')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">Т-34 (1940)</span><span class="node-price">ИЗУЧЕНО</span></div>
+                        <div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ II</div>
+                    <div class="tank-node can-research" onclick="openTankInfo('t34_85')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">Т-34-85</span><span class="node-price">18,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ III</div>
+                    <div class="tank-node locked" onclick="openTankInfo('t44')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">Т-44</span><span class="node-price">55,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ IV</div>
+                    <div class="tank-node locked" onclick="openTankInfo('t54')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">Т-54</span><span class="node-price">110,000 XP</span></div>
+                        <div class="connector-left"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tree-branch" id="branch-light">
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ I</div>
+                    <div class="tank-node unlocked" onclick="openTankInfo('bt7')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">БТ-7</span><span class="node-price">ИЗУЧЕНО</span></div>
+                        <div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ II</div>
+                    <div class="tank-node can-research" onclick="openTankInfo('a20')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">А-20</span><span class="node-price">8,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ III</div>
+                    <div class="tank-node locked" onclick="openTankInfo('mt25')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">МТ-25</span><span class="node-price">30,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ IV</div>
+                    <div class="tank-node locked" onclick="openTankInfo('lttb')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">ЛТТБ</span><span class="node-price">75,000 XP</span></div>
+                        <div class="connector-left"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tree-branch" id="branch-td">
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ I</div>
+                    <div class="tank-node unlocked" onclick="openTankInfo('su85')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">СУ-85</span><span class="node-price">ИЗУЧЕНО</span></div>
+                        <div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ II</div>
+                    <div class="tank-node can-research" onclick="openTankInfo('su100')">
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">СУ-100</span><span class="node-price">25,000 XP</span></div>
+                        <div class="connector-left"></div><div class="connector-right"></div>
+                    </div>
+                </div>
+                <div class="rank-column">
+                    <div class="rank-title">РАНГ III</div>
+                    <div class="tank-node locked" onclick="openTankInfo('isu152')">
+                        <div class="lock-icon">🔒</div>
+                        <div class="node-img" style="background-image: url('img/background_main_menu.png');"></div>
+                        <div class="node-info"><span class="node-name">ИСУ-152</span><span class="node-price">60,000 XP</span></div>
+                        <div class="connector-left"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="tank-details-panel" id="tank-panel">
+            <button class="close-panel" onclick="closePanel()">×</button>
+            <div class="panel-header">
+                <h2 id="panel-name">ТАНК</h2>
+                <span class="class-badge" id="panel-class">КЛАСС</span>
+            </div>
+            <div class="panel-img" id="panel-img"></div>
+            <div class="panel-stats">
+                <div class="stat-row"><span>Броня:</span><strong id="stat-armor">-</strong></div>
+                <div class="stat-row"><span>Орудие:</span><strong id="stat-gun">-</strong></div>
+                <div class="stat-row"><span>Мощность:</span><strong id="stat-engine">-</strong></div>
+            </div>
+            <div class="panel-desc"><p id="panel-desc">...</p></div>
+            <div class="panel-actions">
+                <div class="cost-block"><span style="font-size:10px; color:#888;">ЦЕНА:</span><div class="price-val" id="panel-price">0 XP</div></div>
+                <button class="research-btn" onclick="alert('Исследование начато!')">ИССЛЕДОВАТЬ</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-window">
+            <button class="close-modal" onclick="closeModal()">✕</button>
+            <div class="modal-tabs">
+                <button id="tab-login" class="active" onclick="switchTab('login')">ВХОД</button>
+                <button id="tab-register" onclick="switchTab('register')">РЕГИСТРАЦИЯ</button>
+            </div>
+            <form id="form-login" class="auth-form active">
+                <div class="input-group"><label>ПОЗЫВНОЙ</label><input type="text" placeholder="Никнейм"></div>
+                <div class="input-group"><label>ПАРОЛЬ</label><input type="password" placeholder="••••••••"></div>
+                <button type="submit" class="submit-btn">ВОЙТИ</button>
+            </form>
+            <form id="form-register" class="auth-form">
+                <div class="input-group"><label>НОВЫЙ ПОЗЫВНОЙ</label><input type="text" placeholder="Никнейм"></div>
+                <div class="input-group"><label>EMAIL</label><input type="email" placeholder="mail@example.com"></div>
+                <div class="input-group"><label>ПАРОЛЬ</label><input type="password" placeholder="••••••••"></div>
+                <button type="submit" class="submit-btn">СОЗДАТЬ</button>
+            </form>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2025 TREHSOTNIKI PROJECT.</p></footer>
+
+  <script type="module" src="js/main.js"></script>
+
+    <script>
+        // База данных танков
+        const tanksDB = {
+            // ТЯЖЕЛЫЕ
+            'kv1': { name: 'КВ-1', class: 'Тяжелый танк', armor: '75 / 75 / 70', gun: '76-мм Л-11', engine: '500 л.с.', price: 'ИЗУЧЕНО', desc: 'Советский тяжелый танк начала ВОВ. Отличное круговое бронирование.' },
+            'kv85': { name: 'КВ-85', class: 'Тяжелый танк', armor: '100 / 90 / 90', gun: '85-мм Д-5Т', engine: '600 л.с.', price: '12,000 XP', desc: 'Модернизация КВ-1с с новой башней и мощным 85-мм орудием.' },
+            'is1': { name: 'ИС-1', class: 'Тяжелый танк', armor: '120 / 100 / 100', gun: '85-мм Д-5Т', engine: '600 л.с.', price: '45,000 XP', desc: 'Первый серийный танк семейства ИС. Предназначен для прорыва обороны.' },
+            'is2': { name: 'ИС-2', class: 'Тяжелый танк', armor: '120 / 90 / 60', gun: '122-мм Д-25Т', engine: '600 л.с.', price: '80,000 XP', desc: 'Мощнейшее орудие 122мм, способное уничтожать "Тигров" с дальних дистанций. Долгая перезарядка.' },
+            'is3': { name: 'ИС-3', class: 'Тяжелый танк', armor: '110 / 90 / 60', gun: '122-мм Д-25Т', engine: '520 л.с.', price: '150,000 XP', desc: 'Легендарный "Щучий нос". Рикошетная броня, но уязвимая боеукладка.' },
+            
+            // СРЕДНИЕ
+            't34_76': { name: 'Т-34 (1940)', class: 'Средний танк', armor: '45 / 45 / 40', gun: '76-мм Л-11', engine: '500 л.с.', price: 'ИЗУЧЕНО', desc: 'Легендарная "тридцатьчетверка". Высокая скорость и рациональные углы наклона брони.' },
+            't34_85': { name: 'Т-34-85', class: 'Средний танк', armor: '45 / 45 / 40', gun: '85-мм ЗИС-С-53', engine: '500 л.с.', price: '18,000 XP', desc: 'Финальная модификация Т-34 с новой трехместной башней и мощной пушкой.' },
+            't44': { name: 'Т-44', class: 'Средний танк', armor: '90 / 75 / 45', gun: '85-мм ЗИС-С-53', engine: '520 л.с.', price: '55,000 XP', desc: 'Принципиально новая компоновка корпуса. Низкий силуэт и отличная динамика.' },
+            't54': { name: 'Т-54', class: 'Средний танк', armor: '120 / 80 / 45', gun: '100-мм Д-10Т', engine: '580 л.с.', price: '110,000 XP', desc: 'Один из лучших средних танков своего времени. Мощная лобовая броня и убойное орудие.' },
+            
+            // ЛЕГКИЕ
+            'bt7': { name: 'БТ-7', class: 'Легкий танк', armor: '20 / 15 / 10', gun: '45-мм 20К', engine: '400 л.с.', price: 'ИЗУЧЕНО', desc: 'Быстроходный танк. Очень высокая мобильность, но слабая броня. Прыгает на трамплинах.' },
+            'a20': { name: 'А-20', class: 'Легкий танк', armor: '20 / 20 / 16', gun: '45-мм 20К', engine: '500 л.с.', price: '8,000 XP', desc: 'Прототип Т-34 с колесно-гусеничным ходом. Невероятная скорость.' },
+            'mt25': { name: 'МТ-25', class: 'Легкий танк', armor: '40 / 40 / 40', gun: '57-мм ЗИС-4', engine: '600 л.с.', price: '30,000 XP', desc: 'Скорострельный "пулемет". Идеален для охоты на арту и света.' },
+            'lttb': { name: 'ЛТТБ', class: 'Легкий танк', armor: '90 / 45 / 40', gun: '85-мм Д-5Т', engine: '700 л.с.', price: '75,000 XP', desc: 'Легкий Танк Тяжелого Бронирования. Рикошетный корпус и мощный мотор.' },
+
+            // ПТ-САУ
+            'su85': { name: 'СУ-85', class: 'ПТ-САУ', armor: '45 / 45 / 40', gun: '85-мм Д-5С', engine: '500 л.с.', price: 'ИЗУЧЕНО', desc: 'Самоходка на базе Т-34. Отличное орудие, но слабая броня.' },
+            'su100': { name: 'СУ-100', class: 'ПТ-САУ', armor: '75 / 45 / 45', gun: '100-мм Д-10С', engine: '520 л.с.', price: '25,000 XP', desc: 'Охотник на "Пантер". Высокое пробитие и неплохая маскировка.' },
+            'isu152': { name: 'ИСУ-152', class: 'ПТ-САУ', armor: '90 / 90 / 60', gun: '152-мм МЛ-20С', engine: '600 л.с.', price: '60,000 XP', desc: 'Зверобой. Фугасы этого монстра сносят башни и модули даже без пробития.' }
+        };
+
+        const panel = document.getElementById('tank-panel');
+
+        function openTankInfo(id) {
+            const data = tanksDB[id];
+            if (!data) return;
+
+            document.getElementById('panel-name').innerText = data.name;
+            document.getElementById('panel-class').innerText = data.class;
+            document.getElementById('stat-armor').innerText = data.armor;
+            document.getElementById('stat-gun').innerText = data.gun;
+            document.getElementById('stat-engine').innerText = data.engine;
+            document.getElementById('panel-price').innerText = data.price;
+            document.getElementById('panel-desc').innerText = data.desc;
+            panel.classList.add('open');
+        }
+
+        function closePanel() {
+            panel.classList.remove('open');
+        }
+
+        function filterTree(type, btn) {
+            document.querySelectorAll('.tree-branch').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById('branch-' + type);
+            if (target) target.classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            closePanel();
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Trehsotniki | Военторг</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <div class="top-left-links">
+                <a href="https://store.steampowered.com/app/552100/Brick_Rigs/" target="_blank"><img src="img/br_logo.png" class="steam-logo"></a>
+                <a href="store.html" style="color:var(--accent);">Премиум магазин</a>
+                <a href="support.html">Центр поддержки</a>
+                <a href="https://discord.gg/8zg4FYbn" target="_blank"><img src="img/icons8-discord-48.png" class="discord-logo"></a>
+            </div>
+            <div class="top-right-stats">
+                <a href="profile.html">Моя техника</a>
+                <a href="profile.html">Профиль</a>
+                <div class="stat"><img src="img/gold_ico.jpg"> <span>999,999</span></div>
+                <div class="stat"><img src="img/xp_ico.png"> <span>999,999</span></div>
+            </div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand-zone">
+                <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:15px; color:inherit;">
+                    <img src="img/trehsotniki_logo.png" class="main-logo">
+                    <span class="brand-name">TREHSOTNIKI</span>
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <div class="nav-item">
+                    <span>ПРОЕКТ</span> <img src="img/menu_arrow.png" class="arrow">
+                    <div class="dropdown">
+                        <a href="news.html">Новости</a>
+                        <a href="maps.html">Карты</a>
+                        <a href="workshop.html">Мастерская</a>
+                        <a href="https://drive.google.com/drive/folders/13dSwBa0I4KRNHFESoOlXxc-BbAD4x64F" target="_blank" style="color: #00C851;">Скачать моды</a>
+                    </div>
+                </div>
+
+                <div class="nav-item">
+                    <span>РУКОВОДСТВА</span> <img src="img/menu_arrow.png" class="arrow">
+                    <div class="dropdown">
+                        <a href="newbie.html">Новичку</a>
+                        <a href="economy.html">Экономика</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="auth-buttons">
+                <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
+                <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>
+            </div>
+        </div>
+    </header>
+
+    <div id="auth-modal" class="modal-overlay">
+    <div class="modal-window">
+        <button class="close-modal" onclick="closeModal()">✕</button>
+        
+        <div class="modal-tabs">
+            <button id="tab-login" class="active" onclick="switchTab('login')">ВХОД</button>
+            <button id="tab-register" onclick="switchTab('register')">РЕГИСТРАЦИЯ</button>
+        </div>
+
+        <form id="form-login" class="auth-form active">
+            <div class="input-group">
+                <label>ПОЗЫВНОЙ</label>
+                <input type="text" placeholder="Введите никнейм">
+            </div>
+            <div class="input-group">
+                <label>ПАРОЛЬ</label>
+                <input type="password" placeholder="••••••••">
+            </div>
+            <button type="submit" class="submit-btn">ВОЙТИ В СИСТЕМУ</button>
+        </form>
+
+        <form id="form-register" class="auth-form">
+            <div class="input-group">
+                <label>НОВЫЙ ПОЗЫВНОЙ</label>
+                <input type="text" placeholder="Придумайте ник">
+            </div>
+            <div class="input-group">
+                <label>EMAIL</label>
+                <input type="email" placeholder="mail@example.com">
+            </div>
+            <div class="input-group">
+                <label>ПАРОЛЬ</label>
+                <input type="password" placeholder="••••••••">
+            </div>
+            <button type="submit" class="submit-btn">СОЗДАТЬ АККАУНТ</button>
+        </form>
+    </div>
+</div>
+
+    <section class="page-header-animated">
+        <div class="page-header-bg" style="background-image: url('img/background_main_menu.png'); filter: hue-rotate(-15deg);"></div>
+        <div class="page-header-content">
+            <h1 style="font-family:'Orbitron'; font-size: 42px; color: var(--accent); margin: 0; text-shadow: 0 0 20px #000;">ВОЕНТОРГ</h1>
+            <p style="color: #ccc; font-size: 16px; margin-top: 10px;">Приобретение золота, премиум-статуса и уникальных модификаций.</p>
+        </div>
+    </section>
+
+    <main>
+        <div class="store-grid reveal">
+            
+            <div class="store-card">
+                <div class="store-badge">ХИТ</div>
+                <div class="store-img-box"><img src="img/gold_ico.jpg" class="store-img" style="border-radius:50%;"></div>
+                <div class="store-info">
+                    <h3 class="store-title">СТАРТОВЫЙ ЗАПАС</h3>
+                    <p class="store-desc">5,000 Золота для покупки первого среднего танка и обучения экипажа.</p>
+                    <div class="price-row">
+                        <span class="price">150 ₽</span>
+                        <button class="buy-btn">КУПИТЬ</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-card">
+                <div class="store-img-box"><img src="img/gold_ico.jpg" class="store-img" style="border-radius:50%; transform: scale(1.2);"></div>
+                <div class="store-info">
+                    <h3 class="store-title">СЕЙФ ГЕНЕРАЛА</h3>
+                    <p class="store-desc">25,000 Золота. Хватит на тяжелый танк ИС-2 и полный боекомплект.</p>
+                    <div class="price-row">
+                        <span class="price">500 ₽</span>
+                        <button class="buy-btn">КУПИТЬ</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-card">
+                <div class="store-badge" style="background: var(--accent); color:#000;">VIP</div>
+                <div class="store-img-box"><span style="font-size:50px;">👑</span></div>
+                <div class="store-info">
+                    <h3 class="store-title">ПРЕМИУМ (30 ДНЕЙ)</h3>
+                    <p class="store-desc">+50% к Опыту и Золоту за каждый бой. Уникальная рамка в чате.</p>
+                    <div class="price-row">
+                        <span class="price">300 ₽</span>
+                        <button class="buy-btn">КУПИТЬ</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-card">
+                <div class="store-img-box"><span style="font-size:50px;">🎨</span></div>
+                <div class="store-info">
+                    <h3 class="store-title">ЗИМНИЙ КАМУФЛЯЖ</h3>
+                    <p class="store-desc">Набор текстур "Арктика" для всей советской ветки танков.</p>
+                    <div class="price-row">
+                        <span class="price">100 ₽</span>
+                        <button class="buy-btn">КУПИТЬ</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer><p>&copy; 2025 TREHSOTNIKI PROJECT.</p></footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
