@@ -509,30 +509,49 @@ const screenTree = document.getElementById('screen-tree');
 const backBtn = document.getElementById('back-btn');
 const treeContainer = document.getElementById('tree-container');
 
-// --- 1. АВТОРИЗАЦИЯ (ИСПРАВЛЕНО ОТОБРАЖЕНИЕ В ШАПКЕ) ---
-onAuthStateChanged(auth, (user) => {
+// --- 1. АВТОРИЗАЦИЯ И СИНХРОНИЗАЦИЯ (ИСПРАВЛЕНО ДЛЯ GITHUB) ---
+onAuthStateChanged(auth, async (user) => {
+    const authButtons = document.querySelector('.auth-buttons');
     if (user) {
         currentUser = user;
         const userRef = doc(db, "users", user.uid);
-        onSnapshot(userRef, (docSnap) => {
+
+        onSnapshot(userRef, async (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 userTanks = data.tanks || [];
+                
+                // Проверка стартового набора (Патч для GitHub)
+                const needsUpdate = STARTER_TANKS.some(t => !userTanks.includes(t));
+                if (needsUpdate) {
+                    await updateDoc(userRef, { tanks: arrayUnion(...STARTER_TANKS) });
+                }
+
+                // Обновление валюты
                 const goldEl = document.querySelector('.gold-stat span');
                 const xpEl = document.querySelector('.xp-stat span');
                 if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
                 if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
                 
+                // Отрисовка профиля
+                if (authButtons) {
+                    authButtons.innerHTML = `
+                        <a href="profile.html" class="user-profile-link" style="text-decoration:none; display:flex; align-items:center; gap:10px; color:#fff;">
+                            <img src="${user.photoURL || 'img/gold_ico.jpg'}" class="user-avatar" style="width:35px; height:35px; border-radius:50%; border:2px solid #ffbb33;">
+                            <span class="user-name" style="font-family:'Orbitron'; font-size:14px;">${data.nickname || user.email.split('@')[0]}</span>
+                        </a>`;
+                }
+
                 if (currentNation) renderTechTree(currentNation);
             }
         });
-        
-        // ИСПРАВЛЕНО: Вставляем полную структуру профиля, как на главной
-        document.querySelector('.auth-buttons').innerHTML = `
-            <a href="profile.html" class="user-profile-link" style="text-decoration:none; display:flex; align-items:center; gap:10px; color:#fff;">
-                <img src="${user.photoURL || 'img/default_avatar.png'}" class="user-avatar" style="width:40px; height:40px; border-radius:50%; border:2px solid #ffbb33;">
-                <span class="user-name" style="font-family:'Orbitron';">${user.displayName || user.email.split('@')[0]}</span>
-            </a>`;
+    } else {
+        if (authButtons) {
+            authButtons.innerHTML = `
+                <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
+                <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>
+            `;
+        }
     }
 });
 
@@ -807,4 +826,5 @@ document.addEventListener('keydown', (e) => {
 });
 
 window.closePanel = () => document.getElementById('tank-panel').classList.remove('open');
+
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
