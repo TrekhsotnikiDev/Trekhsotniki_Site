@@ -1,8 +1,12 @@
-/* js/workshop.js - GITHUB PRODUCTION FIX */
+/* js/workshop.js - V13.4 FINAL STABLE (GITHUB READY) */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWqbVh-eFA0A9uPgAf_q8fg4jP7rNnQDk",
@@ -18,18 +22,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 let currentUser = null;
 let userTanks = []; 
 let currentNation = null;
 
-// --- ФИКС ДЛЯ GITHUB: ВЫНОСИМ ФУНКЦИИ В WINDOW СРАЗУ ---
+const STARTER_TANKS = ['fiat', 'm1928', 't18_29', 't18', 'filler', 'st_pz_1', 'st_pz_2', 'ltr_k', 'ltr_r', 't2_29', 't1e1', 't1', 'mk1', 'mk1cs', 'mk2', 'mk3', 'nc31', 'nc27', 'ft', 'char_d1', 'otsu', 'type89', 'ko'];
+
+// --- 1. ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДЛЯ КНОПОК В HTML) ---
 window.openModal = function(mode) {
     const modal = document.getElementById('auth-modal');
     if (!modal) return;
     modal.classList.add('open');
-    
-    // Переключение вкладок
     const isLogin = mode === 'login';
     document.getElementById('form-login')?.classList.toggle('active', isLogin);
     document.getElementById('form-register')?.classList.toggle('active', !isLogin);
@@ -41,7 +44,7 @@ window.closeModal = function() {
     document.getElementById('auth-modal')?.classList.remove('open');
 };
 
-// СЛУШАТЕЛЬ АВТОРИЗАЦИИ
+// --- 2. СИНХРОНИЗАЦИЯ АВТОРИЗАЦИИ (БЕЗ ДВОЙНОГО ЛОГИНА) ---
 onAuthStateChanged(auth, (user) => {
     const authButtons = document.querySelector('.auth-buttons');
     if (user) {
@@ -53,13 +56,13 @@ onAuthStateChanged(auth, (user) => {
                 const data = docSnap.data();
                 userTanks = data.tanks || [];
                 
-                // Валюта
+                // Валюта в реальном времени
                 const goldEl = document.querySelector('.gold-stat span');
                 const xpEl = document.querySelector('.xp-stat span');
                 if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
                 if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
                 
-                // Профиль (Используем проверенные пути для GitHub)
+                // Профиль (GitHub Fix: пути и оформление)
                 if (authButtons) {
                     authButtons.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="location.href='profile.html'">
@@ -82,6 +85,38 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+// --- 3. ОБРАБОТКА ФОРМ (ПРЕДОТВРАЩЕНИЕ ПЕРЕЗАГРУЗКИ) ---
+document.addEventListener("DOMContentLoaded", () => {
+    const formLogin = document.getElementById('form-login');
+    if (formLogin) {
+        formLogin.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputs = formLogin.querySelectorAll('input');
+            signInWithEmailAndPassword(auth, inputs[0].value, inputs[1].value)
+                .then(() => closeModal())
+                .catch(err => alert("Ошибка: " + err.message));
+        });
+    }
+
+    const formReg = document.getElementById('form-register');
+    if (formReg) {
+        formReg.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputs = formReg.querySelectorAll('input');
+            const nick = inputs[0].value;
+            const email = inputs[1].value;
+            const pass = inputs[2].value;
+
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(async (u) => {
+                    await setDoc(doc(db, "users", u.user.uid), {
+                        nickname: nick, email: email, gold: 1000, xp: 500, tanks: STARTER_TANKS, regDate: new Date().toISOString()
+                    });
+                    closeModal();
+                }).catch(err => alert("Ошибка: " + err.message));
+        });
+    }
+});
 // Далее идет ваша база данных FULL_DB и остальные функции...
 
 // ==// === ТВОЯ ПОЛНАЯ БАЗА ДАННЫХ (UPDATED V13: С ОПИСАНИЕМ И ТТХ) ===
@@ -558,66 +593,7 @@ const FULL_DB = {
     }
 };
 
-const NATIONS_LIST = [
-    {id:'ussr', name:'СССР'}, {id:'germany', name:'Германия'}, {id:'usa', name:'США'}, 
-    {id:'uk', name:'Британия'}, {id:'france', name:'Франция'}, {id:'japan', name:'Япония'},
-    {id:'italy', name:'Италия'}, {id:'poland', name:'Польша'}, {id:'hungary', name:'Венгрия'}, {id:'sweden', name:'Швеция'}
-];
-
-// UI
-const screenType = document.getElementById('screen-type');
-const screenNation = document.getElementById('screen-nation');
-const screenTree = document.getElementById('screen-tree');
-const backBtn = document.getElementById('back-btn');
-const treeContainer = document.getElementById('tree-container');
-
-// --- 1. АВТОРИЗАЦИЯ И СИНХРОНИЗАЦИЯ (ИСПРАВЛЕНО ДЛЯ GITHUB) ---
-// --- ЗАМЕНИТЬ В workshop.js ---
-// --- 1. АВТОРИЗАЦИЯ И СИНХРОНИЗАЦИЯ С ЕДИНОЙ СЕССИЕЙ ---
-onAuthStateChanged(auth, async (user) => {
-    const authButtons = document.querySelector('.auth-buttons');
-    
-    if (user) {
-        // Если пользователь найден, работаем с его данными
-        currentUser = user;
-        const userRef = doc(db, "users", user.uid);
-
-        onSnapshot(userRef, async (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                userTanks = data.tanks || [];
-                
-                // Обновляем золото и опыт
-                const goldEl = document.querySelector('.gold-stat span');
-                const xpEl = document.querySelector('.xp-stat span');
-                if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
-                if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
-                
-                // Отрисовываем профиль
-                if (authButtons) {
-                    authButtons.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="location.href='profile.html'">
-                            <div style="text-align:right; line-height:1.2;">
-                                <div style="font-size:10px; color:#888; font-weight:700;">КОМАНДИР</div>
-                                <div style="color:#ffbb33; font-family:'Orbitron'; font-size:14px;">${data.nickname || user.email.split('@')[0]}</div>
-                            </div>
-                            <div style="width:35px; height:35px; background:#333; border-radius:50%; border:1px solid #ff9d00; background-image:url('./img/gold_ico.jpg'); background-size:cover;"></div>
-                        </div>`;
-                }
-
-                if (currentNation) renderTechTree(currentNation);
-            }
-        });
-    } else {
-        // Рисуем кнопки ТОЛЬКО если Firebase точно сказал, что пользователя нет
-        if (authButtons) {
-            authButtons.innerHTML = `
-                <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
-                <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>`;
-        }
-    }
-});
-// --- 2. НАВИГАЦИЯ ---
+// --- 5. ЛОГИКА ИНТЕРФЕЙСА ---
 window.selectType = (type) => {
     if (type === 'ground') {
         screenType.style.display = 'none';
@@ -633,26 +609,22 @@ window.selectType = (type) => {
 };
 
 window.selectNation = (nationId) => {
-    if (!FULL_DB[nationId]) return alert("Ветка этой нации в разработке!");
+    if (!FULL_DB[nationId]) return alert("Ветка в разработке!");
     currentNation = nationId;
     screenNation.style.display = 'none';
     screenTree.style.display = 'flex';
-    
-    // ВОТ ЗДЕСЬ ОБНОВЛЕНИЕ:
     backBtn.onclick = () => {
+        closePanel();
         screenTree.style.display = 'none';
         screenNation.style.display = 'flex';
         currentNation = null;
-        
-        closePanel(); // <--- ДОБАВЬ ЭТУ СТРОЧКУ!
     };
-    
     renderTechTree(nationId);
 };
 
 function renderNationButtons() {
     const grid = document.querySelector('.nations-grid');
-    grid.innerHTML = '';
+    if(!grid) return; grid.innerHTML = '';
     NATIONS_LIST.forEach(nat => {
         const btn = document.createElement('div');
         btn.className = 'nation-btn';
@@ -662,15 +634,10 @@ function renderNationButtons() {
     });
 }
 
-// --- 3. ГЕНЕРАТОР ДЕРЕВА (ИСПРАВЛЕНА СОРТИРОВКА) ---
 function renderTechTree(nationId) {
     treeContainer.innerHTML = ''; 
     const tanks = FULL_DB[nationId];
-    
-    const headers = [
-        {name: 'ТЯЖЕЛЫЕ', col: 1}, {name: 'СРЕДНИЕ', col: 2}, 
-        {name: 'ЛЕГКИЕ', col: 3}, {name: 'ПТ-САУ', col: 4}
-    ];
+    const headers = [{name:'ТЯЖЕЛЫЕ', col:1}, {name:'СРЕДНИЕ', col:2}, {name:'ЛЕГКИЕ', col:3}, {name:'ПТ-САУ', col:4}];
     headers.forEach(h => {
         const title = document.createElement('div');
         title.className = 'branch-title'; title.innerText = h.name;
@@ -679,33 +646,18 @@ function renderTechTree(nationId) {
     });
 
     const colMap = { 'heavy': 1, 'medium': 2, 'light': 3, 'td': 4 };
-
     Object.keys(colMap).forEach(cls => {
         const colIndex = colMap[cls];
         const branchTanks = Object.entries(tanks).filter(([_, t]) => t.class === cls);
-
         for (let r = 1; r <= 5; r++) { 
             let rankTanks = branchTanks.filter(([_, t]) => t.rank === r);
-            
-            // ВАЖНО: Сортировка внутри ранга, чтобы родители были выше детей
-            rankTanks.sort((a, b) => {
-                const [idA, tankA] = a; const [idB, tankB] = b;
-                if (tankA.req === idB) return 1; // A требует B -> B выше
-                if (tankB.req === idA) return -1; // B требует A -> A выше
-                return 0;
-            });
-
+            rankTanks.sort((a, b) => (a[1].req === b[0] ? 1 : b[1].req === a[0] ? -1 : 0));
             const rankBlock = document.createElement('div');
             rankBlock.className = 'rank-block';
             rankBlock.style.gridColumn = colIndex;
             rankBlock.style.gridRow = r + 1; 
-
             let html = `<div class="rank-header">РАНГ ${toRoman(r)}</div><div class="rank-content">`;
-            if (rankTanks.length > 0) {
-                rankTanks.forEach(([id, t]) => {
-                    html += createCardHTML(id, t, tanks, r);
-                });
-            } 
+            rankTanks.forEach(([id, t]) => { html += createCardHTML(id, t, tanks, r); });
             html += `</div>`;
             rankBlock.innerHTML = html;
             treeContainer.appendChild(rankBlock);
@@ -715,157 +667,67 @@ function renderTechTree(nationId) {
 
 function createCardHTML(id, t, allTanks, rank) {
     const isUnlocked = userTanks.includes(id) || t.cost === 0;
-    
-    let canResearch = false;
-    if (!isUnlocked) {
-        if (t.req) {
-            if (userTanks.includes(t.req)) canResearch = true;
-        } else {
-            if (rank === 1) canResearch = true; 
-            else {
-                const prevRankTanks = Object.entries(allTanks).filter(([_, tank]) => tank.rank === rank - 1);
-                if (prevRankTanks.some(([pid, _]) => userTanks.includes(pid))) canResearch = true;
-            }
-        }
+    let canResearch = (rank === 1 && !t.req);
+    if (!isUnlocked && t.req) canResearch = userTanks.includes(t.req);
+    if (!isUnlocked && !t.req && rank > 1) {
+        const prevRank = Object.entries(allTanks).filter(([_, tank]) => tank.rank === rank - 1);
+        canResearch = prevRank.some(([pid, _]) => userTanks.includes(pid));
     }
-
-    let status = 'locked';
-    if (isUnlocked) status = 'unlocked';
-    else if (canResearch) status = 'can-research';
+    let status = isUnlocked ? 'unlocked' : (canResearch ? 'can-research' : 'locked');
     if (t.premium) status = 'premium';
-
     let arrowClass = '';
-    
-    const allFollowers = Object.entries(allTanks).filter(([_, child]) => child.req === id);
-    const columnFollowers = allFollowers.filter(([_, child]) => child.class === t.class);
-    
-    if (columnFollowers.length > 0) {
-        if (columnFollowers.some(([_, child]) => child.rank === rank)) {
-            arrowClass = 'has-arrow-short'; 
-        } else if (columnFollowers.some(([_, child]) => child.rank > rank)) {
-            arrowClass = 'has-arrow-long';
-        }
+    const followers = Object.entries(allTanks).filter(([_, child]) => child.req === id && child.class === t.class);
+    if (followers.length > 0) {
+        arrowClass = followers.some(([_, child]) => child.rank === rank) ? 'has-arrow-short' : 'has-arrow-long';
     }
-
-    // --- РУЧНОЕ УДЛИНЕНИЕ ---
-    if (t.longLine) {
-        // Если longLine: true -> ставим МЕГА (600px)
-        arrowClass = arrowClass.replace('has-arrow-long', 'has-arrow-mega');
-        arrowClass = arrowClass.replace('has-arrow-short', 'has-arrow-mega');
-        if (!arrowClass.includes('has-arrow-mega')) arrowClass += ' has-arrow-mega';
-    } 
-    else if (t.midLine) {
-        // НОВОЕ: Если midLine: true -> ставим СРЕДНЮЮ (450px)
-        arrowClass = arrowClass.replace('has-arrow-long', 'has-arrow-mid');
-        arrowClass = arrowClass.replace('has-arrow-short', 'has-arrow-mid');
-        if (!arrowClass.includes('has-arrow-mid')) arrowClass += ' has-arrow-mid';
-    }
+    if (t.longLine) arrowClass = 'has-arrow-mega';
+    if (t.midLine) arrowClass = 'has-arrow-mid';
 
     return `
     <div class="br-row">
         <div class="br-label">${t.br.toFixed(1)}</div>
         <div id="tank-${id}" class="wt-card ${status} ${arrowClass}" onclick="openTankInfo('${id}')">
-            <div class="card-visual">
-                <div class="class-icon"></div> <span>${t.name}</span>
-            </div>
+            <div class="card-visual"><div class="class-icon"></div><span>${t.name}</span></div>
         </div>
     </div>`;
 }
 
-/* --- ОБНОВЛЕННАЯ ФУНКЦИЯ ОТКРЫТИЯ ПАНЕЛИ (V3: DYNAMIC BARS) --- */
 window.openTankInfo = function(id) {
     let data = null;
-    let nationKey = null;
-    
-    // 1. Ищем танк
-    for (const nat in FULL_DB) { 
-        if (FULL_DB[nat][id]) { 
-            data = FULL_DB[nat][id]; 
-            nationKey = nat; 
-            break; 
-        } 
-    }
+    for (const nat in FULL_DB) { if (FULL_DB[nat][id]) { data = FULL_DB[nat][id]; break; } }
     if (!data) return;
 
-    // 2. Тексты
     document.getElementById('panel-name').innerText = data.name;
     document.getElementById('panel-desc').innerText = data.desc || "Описание засекречено.";
-    
     const classNames = { 'heavy': 'ТЯЖЕЛЫЙ ТАНК', 'medium': 'СРЕДНИЙ ТАНК', 'light': 'ЛЕГКИЙ ТАНК', 'td': 'ПТ-САУ' };
     document.getElementById('panel-class').innerText = classNames[data.class] || "ТЕХНИКА";
     
-    // 3. Статистика и Полоски
     const s = data.stats || {}; 
-    const txtArmor = s.armor || "0";
-    const txtGun = s.gun || "0";
-    const txtEngine = s.engine || "0";
+    document.getElementById('stat-armor').innerText = s.armor || "-";
+    document.getElementById('stat-gun').innerText = s.gun || "-";
+    document.getElementById('stat-engine').innerText = s.engine || "-";
 
-    document.getElementById('stat-armor').innerText = txtArmor;
-    document.getElementById('stat-gun').innerText = txtGun;
-    document.getElementById('stat-engine').innerText = txtEngine;
-
-    // --- ЛОГИКА ЗАПОЛНЕНИЯ ПОЛОСОК ---
-    // Функция ищет самое большое число в строке (например "150/100" -> 150)
-    const parseMax = (str) => {
+    const parse = (str) => { 
         if(!str) return 0;
-        const matches = str.match(/(\d+)/g); // Найти все группы цифр
-        if (!matches) return 0;
-        return Math.max(...matches.map(Number)); // Вернуть максимальное
+        const m = str.match(/(\d+)/g); 
+        return m ? Math.max(...m.map(Number)) : 0; 
     };
+    
+    document.getElementById('bar-armor').style.width = Math.min(100, Math.max(5, (parse(s.armor)/300)*100)) + "%";
+    document.getElementById('bar-gun').style.width = Math.min(100, Math.max(5, (parse(s.gun)/155)*100)) + "%";
+    document.getElementById('bar-engine').style.width = Math.min(100, Math.max(5, (parse(s.engine)/1200)*100)) + "%";
 
-    const valArmor = parseMax(txtArmor);
-    const valGun = parseMax(txtGun);
-    const valEngine = parseMax(txtEngine);
-
-    // Максимальные значения (100% полоски)
-    const MAX_ARMOR = 300;  // 300мм = полная полоска (Т32 имеет 298мм)
-    const MAX_GUN = 155;    // 155мм = полная полоска (Т30)
-    const MAX_ENGINE = 1200; // 1200 л.с. = полная полоска (E-100)
-
-    // Расчет процентов (минимум 5%, максимум 100%)
-    const pctArmor = Math.min(100, Math.max(5, (valArmor / MAX_ARMOR) * 100));
-    const pctGun = Math.min(100, Math.max(5, (valGun / MAX_GUN) * 100));
-    const pctEngine = Math.min(100, Math.max(5, (valEngine / MAX_ENGINE) * 100));
-
-    // Применяем ширину
-    document.getElementById('bar-armor').style.width = pctArmor + "%";
-    document.getElementById('bar-gun').style.width = pctGun + "%";
-    document.getElementById('bar-engine').style.width = pctEngine + "%";
-
-    // Окрашиваем полоску в зависимости от крутости (Опционально)
-    // Зеленый для высоких, желтый для средних, оранжевый для низких
-    const setColor = (el, pct) => {
-        if (pct > 80) el.style.backgroundColor = "#00C851"; // Зеленый
-        else if (pct > 40) el.style.backgroundColor = "#ffbb33"; // Желтый (акцент)
-        else el.style.backgroundColor = "#ff4444"; // Красный
-    };
-    // Если хочешь разноцветные - раскомментируй строки ниже:
-    // setColor(document.getElementById('bar-armor'), pctArmor);
-    // setColor(document.getElementById('bar-gun'), pctGun);
-    // setColor(document.getElementById('bar-engine'), pctEngine);
-
-
-    // 4. Кнопка (без изменений)
     const buyBtn = document.getElementById('buy-btn');
     const priceLabel = document.getElementById('panel-price');
     const isOwned = userTanks.includes(id) || data.cost === 0;
-    
-    let canBuy = false;
-    let nationTanks = FULL_DB[nationKey];
-
-    if (data.req) { if (userTanks.includes(data.req)) canBuy = true; } 
-    else { if (data.rank === 1) canBuy = true; else { const prevRankTanks = Object.entries(nationTanks).filter(([_, t]) => t.rank === data.rank - 1); if (prevRankTanks.some(([pid, _]) => userTanks.includes(pid))) canBuy = true; } }
 
     if (isOwned) {
         priceLabel.innerText = "ИЗУЧЕНО"; priceLabel.style.color = "#00C851";
-        buyBtn.innerText = "В АНГАРЕ"; buyBtn.disabled = true; buyBtn.style.background = "#333"; buyBtn.onclick = null;
-    } else if (canBuy) {
-        priceLabel.innerText = data.cost.toLocaleString() + " XP"; priceLabel.style.color = "#ffbb33";
-        buyBtn.innerText = "ИССЛЕДОВАТЬ"; buyBtn.disabled = false; buyBtn.style.background = "linear-gradient(90deg, #ff9d00, #ffbb33)"; buyBtn.style.color = "#000";
-        buyBtn.onclick = () => buyTank(id, data.cost, data.name);
+        buyBtn.innerText = "В АНГАРЕ"; buyBtn.disabled = true; buyBtn.style.background = "#333";
     } else {
-        priceLabel.innerText = "НЕДОСТУПНО"; priceLabel.style.color = "#555";
-        buyBtn.innerText = "ЗАБЛОКИРОВАНО"; buyBtn.disabled = true; buyBtn.style.background = "#222";
+        priceLabel.innerText = data.cost.toLocaleString() + " XP"; priceLabel.style.color = "#ffbb33";
+        buyBtn.innerText = "ИССЛЕДОВАТЬ"; buyBtn.disabled = false; buyBtn.style.background = "linear-gradient(90deg, #ff9d00, #ffbb33)";
+        buyBtn.onclick = () => buyTank(id, data.cost, data.name);
     }
     document.getElementById('tank-panel').classList.add('open');
 };
@@ -878,71 +740,20 @@ async function buyTank(id, cost, name) {
     if (userData.xp >= cost) {
         await updateDoc(userRef, { xp: userData.xp - cost, tanks: arrayUnion(id) });
         alert(`Куплен: ${name}`);
-        window.openTankInfo(id);
     } else { alert("Не хватает опыта!"); }
 }
 
-// Закрытие по ESC
-document.addEventListener('keydown', (e) => {
-    if (e.key === "Escape") closePanel();
+window.closePanel = () => { 
+    const p = document.getElementById('tank-panel'); 
+    if(p) p.classList.remove('open'); 
+};
+
+document.addEventListener('keydown', (e) => { 
+    if (e.key === "Escape") closePanel(); 
 });
-
-// --- ЛОГИКА ВХОДА И РЕГИСТРАЦИИ ДЛЯ МАСТЕРСКОЙ (FIX) ---
-document.addEventListener("DOMContentLoaded", () => {
-    // Обработка ВХОДА
-    const formLogin = document.getElementById('form-login');
-    if (formLogin) {
-        formLogin.addEventListener('submit', (e) => {
-            e.preventDefault(); // Запрещаем перезагрузку
-            const inputs = formLogin.querySelectorAll('input');
-            const email = inputs[0].value;
-            const password = inputs[1].value;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => {
-                    closeModal(); // Закрываем окно после успеха
-                })
-                .catch((error) => {
-                    console.error(error);
-                    alert("Ошибка входа: проверьте почту и пароль.");
-                });
-        });
-    }
-
-    // Обработка РЕГИСТРАЦИИ
-    const formRegister = document.getElementById('form-register');
-    if (formRegister) {
-        formRegister.addEventListener('submit', (e) => {
-            e.preventDefault(); // Запрещаем перезагрузку
-            const inputs = formRegister.querySelectorAll('input');
-            const nickname = inputs[0].value;
-            const email = inputs[1].value;
-            const password = inputs[2].value;
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    // Создаем профиль в базе с набором танков 1.0
-                    await setDoc(doc(db, "users", user.uid), {
-                        nickname: nickname,
-                        email: email,
-                        gold: 1000,
-                        xp: 500,
-                        tanks: STARTER_TANKS,
-                        regDate: new Date().toISOString()
-                    });
-                    closeModal();
-                })
-                .catch((error) => {
-                    alert("Ошибка регистрации: " + error.message);
-                });
-        });
-    }
-});
-
-window.closePanel = () => document.getElementById('tank-panel').classList.remove('open');
 
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
 
 
 
