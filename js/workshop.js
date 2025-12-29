@@ -886,8 +886,62 @@ document.addEventListener('keydown', (e) => {
     if (e.key === "Escape") closePanel();
 });
 
+// --- ЛОГИКА ВХОДА И РЕГИСТРАЦИИ ДЛЯ МАСТЕРСКОЙ (FIX) ---
+document.addEventListener("DOMContentLoaded", () => {
+    // Обработка ВХОДА
+    const formLogin = document.getElementById('form-login');
+    if (formLogin) {
+        formLogin.addEventListener('submit', (e) => {
+            e.preventDefault(); // Запрещаем перезагрузку
+            const inputs = formLogin.querySelectorAll('input');
+            const email = inputs[0].value;
+            const password = inputs[1].value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    closeModal(); // Закрываем окно после успеха
+                })
+                .catch((error) => {
+                    console.error(error);
+                    alert("Ошибка входа: проверьте почту и пароль.");
+                });
+        });
+    }
+
+    // Обработка РЕГИСТРАЦИИ
+    const formRegister = document.getElementById('form-register');
+    if (formRegister) {
+        formRegister.addEventListener('submit', (e) => {
+            e.preventDefault(); // Запрещаем перезагрузку
+            const inputs = formRegister.querySelectorAll('input');
+            const nickname = inputs[0].value;
+            const email = inputs[1].value;
+            const password = inputs[2].value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    // Создаем профиль в базе с набором танков 1.0
+                    await setDoc(doc(db, "users", user.uid), {
+                        nickname: nickname,
+                        email: email,
+                        gold: 1000,
+                        xp: 500,
+                        tanks: STARTER_TANKS,
+                        regDate: new Date().toISOString()
+                    });
+                    closeModal();
+                })
+                .catch((error) => {
+                    alert("Ошибка регистрации: " + error.message);
+                });
+        });
+    }
+});
+
 window.closePanel = () => document.getElementById('tank-panel').classList.remove('open');
 
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
 
 
