@@ -18,6 +18,35 @@ const firebaseConfig = {
   measurementId: "G-C2HM2K9S5W"
 };
 
+// --- ДОБАВИТЬ ЭТО В workshop.js ---
+
+// Сначала находим элементы в HTML по их ID
+const screenType = document.getElementById('screen-type');
+const screenNation = document.getElementById('screen-nation');
+const screenTree = document.getElementById('screen-tree');
+const backBtn = document.getElementById('back-btn');
+const treeContainer = document.getElementById('tree-container');
+
+// Теперь ваши функции навигации смогут их увидеть:
+window.selectType = (type) => {
+    if (type === 'ground') {
+        if (!screenType || !screenNation) return; // Проверка на случай ошибок
+        
+        screenType.style.display = 'none';
+        screenNation.style.display = 'flex';
+        renderNationButtons();
+        
+        if (backBtn) {
+            backBtn.style.display = 'block';
+            backBtn.onclick = () => {
+                screenNation.style.display = 'none';
+                screenType.style.display = 'flex';
+                backBtn.style.display = 'none';
+            };
+        }
+    }
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -753,6 +782,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
 
 
 
