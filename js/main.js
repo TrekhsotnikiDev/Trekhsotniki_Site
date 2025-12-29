@@ -209,9 +209,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Глобальные функции
+// Найти функцию openModal и заменить на эту:
 window.openModal = function(mode) {
     const modal = document.getElementById('auth-modal');
-    if (modal) { modal.classList.add('open'); window.switchTab(mode); }
+    if (modal) {
+        modal.classList.add('open');
+        window.switchTab(mode);
+    }
 };
 window.closeModal = function() {
     const modal = document.getElementById('auth-modal');
@@ -245,3 +249,7 @@ function initAnimations() {
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 }
+// Добавь эти строки в самый конец файла main.js:
+window.closeModal = closeModal;
+window.switchTab = switchTab;
+
