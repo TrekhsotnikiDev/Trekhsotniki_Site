@@ -1,4 +1,4 @@
-/* js/workshop.js - V12.2 FIXED SORTING, LINES & HEADER */
+/* js/workshop.js - GITHUB PRODUCTION FIX */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -18,9 +18,71 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 let currentUser = null;
 let userTanks = []; 
 let currentNation = null;
+
+// --- ФИКС ДЛЯ GITHUB: ВЫНОСИМ ФУНКЦИИ В WINDOW СРАЗУ ---
+window.openModal = function(mode) {
+    const modal = document.getElementById('auth-modal');
+    if (!modal) return;
+    modal.classList.add('open');
+    
+    // Переключение вкладок
+    const isLogin = mode === 'login';
+    document.getElementById('form-login')?.classList.toggle('active', isLogin);
+    document.getElementById('form-register')?.classList.toggle('active', !isLogin);
+    document.getElementById('tab-login')?.classList.toggle('active', isLogin);
+    document.getElementById('tab-register')?.classList.toggle('active', !isLogin);
+};
+
+window.closeModal = function() {
+    document.getElementById('auth-modal')?.classList.remove('open');
+};
+
+// СЛУШАТЕЛЬ АВТОРИЗАЦИИ
+onAuthStateChanged(auth, (user) => {
+    const authButtons = document.querySelector('.auth-buttons');
+    if (user) {
+        currentUser = user;
+        const userRef = doc(db, "users", user.uid);
+
+        onSnapshot(userRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                userTanks = data.tanks || [];
+                
+                // Валюта
+                const goldEl = document.querySelector('.gold-stat span');
+                const xpEl = document.querySelector('.xp-stat span');
+                if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
+                if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
+                
+                // Профиль (Используем проверенные пути для GitHub)
+                if (authButtons) {
+                    authButtons.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="location.href='profile.html'">
+                            <div style="text-align:right; line-height:1.2;">
+                                <div style="font-size:10px; color:#888; font-weight:700;">КОМАНДИР</div>
+                                <div style="color:#ffbb33; font-family:'Orbitron'; font-size:14px;">${data.nickname || user.email.split('@')[0]}</div>
+                            </div>
+                            <div style="width:35px; height:35px; background:#333; border-radius:50%; border:1px solid #ff9d00; background-image:url('./img/gold_ico.jpg'); background-size:cover;"></div>
+                        </div>`;
+                }
+                if (currentNation) renderTechTree(currentNation);
+            }
+        });
+    } else {
+        if (authButtons) {
+            authButtons.innerHTML = `
+                <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
+                <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>`;
+        }
+    }
+});
+
+// Далее идет ваша база данных FULL_DB и остальные функции...
 
 // ==// === ТВОЯ ПОЛНАЯ БАЗА ДАННЫХ (UPDATED V13: С ОПИСАНИЕМ И ТТХ) ===
 const FULL_DB = {
@@ -827,4 +889,5 @@ document.addEventListener('keydown', (e) => {
 window.closePanel = () => document.getElementById('tank-panel').classList.remove('open');
 
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
 
