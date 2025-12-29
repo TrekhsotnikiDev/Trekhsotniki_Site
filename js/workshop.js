@@ -27,6 +27,13 @@ const screenTree = document.getElementById('screen-tree');
 const backBtn = document.getElementById('back-btn');
 const treeContainer = document.getElementById('tree-container');
 
+// --- 1. ОБЪЯВЛЕНИЕ ГЛОБАЛЬНЫХ КОНСТАНТ (ВАЖНО: В САМОМ ВЕРХУ) ---
+const NATIONS_LIST = [
+    {id:'ussr', name:'СССР'}, {id:'germany', name:'Германия'}, {id:'usa', name:'США'}, 
+    {id:'uk', name:'Британия'}, {id:'france', name:'Франция'}, {id:'japan', name:'Япония'},
+    {id:'italy', name:'Италия'}, {id:'poland', name:'Польша'}, {id:'hungary', name:'Венгрия'}, {id:'sweden', name:'Швеция'}
+];
+
 // Теперь ваши функции навигации смогут их увидеть:
 window.selectType = (type) => {
     if (type === 'ground') {
@@ -782,6 +789,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
 
 
 
