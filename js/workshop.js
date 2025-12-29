@@ -573,49 +573,50 @@ const treeContainer = document.getElementById('tree-container');
 
 // --- 1. АВТОРИЗАЦИЯ И СИНХРОНИЗАЦИЯ (ИСПРАВЛЕНО ДЛЯ GITHUB) ---
 // --- ЗАМЕНИТЬ В workshop.js ---
+// --- 1. АВТОРИЗАЦИЯ И СИНХРОНИЗАЦИЯ С ЕДИНОЙ СЕССИЕЙ ---
 onAuthStateChanged(auth, async (user) => {
     const authButtons = document.querySelector('.auth-buttons');
+    
     if (user) {
+        // Если пользователь найден, работаем с его данными
         currentUser = user;
         const userRef = doc(db, "users", user.uid);
 
-        // Слушатель изменений данных пользователя в реальном времени
         onSnapshot(userRef, async (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 userTanks = data.tanks || [];
                 
-                // Обновляем золото и опыт в топ-баре
+                // Обновляем золото и опыт
                 const goldEl = document.querySelector('.gold-stat span');
                 const xpEl = document.querySelector('.xp-stat span');
                 if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
                 if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
                 
-                // Отрисовываем профиль (как на главной)
+                // Отрисовываем профиль
                 if (authButtons) {
                     authButtons.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="location.href='profile.html'">
                             <div style="text-align:right; line-height:1.2;">
                                 <div style="font-size:10px; color:#888; font-weight:700;">КОМАНДИР</div>
-                                <a href="profile.html" style="color:#ffbb33; font-family:'Orbitron'; font-size:14px; text-decoration:none;">${data.nickname || user.email.split('@')[0]}</a>
+                                <div style="color:#ffbb33; font-family:'Orbitron'; font-size:14px;">${data.nickname || user.email.split('@')[0]}</div>
                             </div>
-                            <div style="width:35px; height:35px; background:#333; border-radius:50%; border:1px solid #555; background-image:url('img/gold_ico.jpg'); background-size:cover;"></div>
+                            <div style="width:35px; height:35px; background:#333; border-radius:50%; border:1px solid #ff9d00; background-image:url('./img/gold_ico.jpg'); background-size:cover;"></div>
                         </div>`;
                 }
 
-                // Перерисовываем дерево, если выбрана нация
                 if (currentNation) renderTechTree(currentNation);
             }
         });
     } else {
+        // Рисуем кнопки ТОЛЬКО если Firebase точно сказал, что пользователя нет
         if (authButtons) {
             authButtons.innerHTML = `
-                <button class="login-btn-ghost" onclick="window.openModal('login')">ВХОД</button>
-                <button class="reg-btn-modern" onclick="window.openModal('register')">РЕГИСТРАЦИЯ</button>`;
+                <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
+                <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>`;
         }
     }
 });
-
 // --- 2. НАВИГАЦИЯ ---
 window.selectType = (type) => {
     if (type === 'ground') {
@@ -942,6 +943,7 @@ document.addEventListener("DOMContentLoaded", () => {
 window.closePanel = () => document.getElementById('tank-panel').classList.remove('open');
 
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
 
 
 
