@@ -1,0 +1,352 @@
+/* style/workshop.css — V12.4 FINAL LINES FIX */
+
+/* --- 1. КАРКАС --- */
+body {
+    height: 100vh !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    background-color: #050505 !important;
+}
+
+.top-bar, .main-header {
+    flex: 0 0 auto !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    width: 100% !important;
+    background: #000 !important;
+}
+
+.workshop-wrapper {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: hidden !important;
+    position: relative !important;
+    z-index: 1 !important;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center;
+}
+
+.nav-back-btn {
+    background: transparent; border: 1px solid #444; color: var(--accent);
+    padding: 8px 16px; font-family: 'Orbitron'; font-size: 12px; cursor: pointer;
+    margin-right: 20px; transition: 0.2s; text-transform: uppercase; border-radius: 4px;
+}
+.nav-back-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 10px var(--accent); }
+
+/* --- 2. ЭКРАНЫ МЕНЮ --- */
+.selection-screen {
+    width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    animation: fadeIn 0.5s ease-out; background: rgba(0,0,0,0.8); z-index: 200; position: absolute; top: 0; left: 0;
+}
+.screen-title { font-family: 'Orbitron'; color: #fff; font-size: 36px; margin-bottom: 60px; text-shadow: 0 0 20px rgba(255, 187, 51, 0.5); }
+.selection-grid { display: flex; gap: 60px; }
+.select-card {
+    width: 320px; height: 450px; border: 1px solid #333; position: relative; cursor: pointer; overflow: hidden; transition: 0.4s;
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; background: #0a0a0a;
+}
+.select-card:hover { border-color: #ffbb33; transform: translateY(-15px); box-shadow: 0 20px 50px rgba(255, 187, 51, 0.15); }
+.card-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.4; transition: 0.4s; filter: grayscale(100%); z-index: 0; }
+.select-card:nth-child(1) .card-bg { background-image: url('../img/bg_ground.jpg'); background-color: #222; } 
+.select-card:nth-child(2) .card-bg { background-image: url('../img/bg_air.jpg'); background-color: #111; }
+.select-card:hover .card-bg { opacity: 0.8; filter: grayscale(0%); transform: scale(1.1); }
+.select-card h2 { position: relative; z-index: 2; font-family: 'Orbitron'; font-size: 32px; margin: 0; color: #fff; }
+.select-card p { position: relative; z-index: 2; color: #ccc; margin-top: 10px; font-size: 14px; }
+.select-card.locked { opacity: 0.5; cursor: not-allowed; border-color: #222; }
+.lock-overlay { position: absolute; top: 20px; right: 20px; font-size: 24px; z-index: 10; }
+
+.nations-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; max-width: 1200px; width: 100%; padding: 0 20px; }
+.nation-btn {
+    background: rgba(255,255,255,0.03); border: 1px solid #333; color: #aaa; padding: 25px 10px; font-family: 'Orbitron'; font-size: 16px; cursor: pointer;
+    transition: 0.3s; text-align: center; clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+}
+.nation-btn:hover { background: #ffbb33; color: #000; border-color: #ffbb33; font-weight: 800; transform: scale(1.05); }
+
+/* --- 3. ДЕРЕВО (СЕТКА) --- */
+.tree-screen { display: flex; flex-direction: column; width: 100%; height: 100%; position: relative; }
+.tree-container {
+    flex: 1 1 auto !important; overflow: auto !important; padding: 60px 40px;
+    display: flex; justify-content: center; align-items: flex-start;
+}
+.tree-container::-webkit-scrollbar { width: 8px; height: 8px; }
+.tree-container::-webkit-scrollbar-track { background: #0b0b0b; }
+.tree-container::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+.tree-inner {
+    display: grid !important; grid-template-columns: repeat(4, 300px); grid-auto-rows: min-content; 
+    column-gap: 60px; row-gap: 0; padding-bottom: 100px; margin: 0 auto;
+}
+
+.branch-title {
+    text-align: center; font-family: 'Orbitron'; color: #444; font-size: 18px; margin-bottom: 20px; text-transform: uppercase;
+    border-bottom: 2px solid #333; padding-bottom: 10px; grid-row: 1;
+}
+
+.rank-block {
+    display: flex; width: 100%; min-height: 160px; height: 100%; flex-direction: column; 
+    border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; position: relative;
+    overflow: visible !important; 
+}
+.rank-header {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 30px; display: flex; align-items: center; justify-content: center; 
+    writing-mode: vertical-lr; transform: rotate(180deg); font-family: 'Orbitron'; color: #333; font-size: 10px; letter-spacing: 2px; 
+    background: rgba(255,255,255,0.02);
+}
+.rank-content {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; 
+    width: 100%; height: 100%; padding-left: 30px; gap: 50px; padding-bottom: 20px;
+    overflow: visible !important; 
+}
+.br-row { display: flex; align-items: center; gap: 40px; position: relative; }
+.br-label { position: absolute; left: -35px; font-family: 'Inter'; font-weight: 700; color: #555; font-size: 12px; }
+
+/* 4. КАРТОЧКА */
+.wt-card {
+    width: 220px; height: 80px; position: relative;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 20; /* ПОДНЯЛ Z-INDEX, чтобы точно перекрывать линии */
+    
+    /* --- РЕШЕНИЕ: НЕВИДИМАЯ КОРОБКА --- */
+    background-color: #050505; 
+}
+
+.card-visual {
+    position: absolute; inset: 0; background: #141414; border: 1px solid #333;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: 0.2s; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    z-index: 10;
+}
+.card-visual::before { content: ''; position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.4; filter: grayscale(100%) contrast(1.2); transition: 0.3s; z-index: 0; }
+.card-visual::before { background-image: url('../img/background_main_menu.png'); }
+.wt-card span { font-family: 'Orbitron'; font-size: 13px; color: #aaa; text-transform: uppercase; z-index: 2; text-shadow: 0 2px 4px black; }
+.class-icon { width: 10px; height: 10px; border: 2px solid #555; transform: rotate(45deg); margin-right: 10px; z-index: 2; background: rgba(0,0,0,0.6); }
+.wt-card:hover .card-visual { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.15); z-index: 10; }
+.wt-card:hover .card-visual::before { opacity: 0.8; filter: grayscale(0%); }
+.wt-card:hover span { color: #fff; }
+
+/* Статусы */
+.wt-card.unlocked .card-visual { border-color: #00C851; background: linear-gradient(135deg, rgba(0, 40, 0, 0.9), #0a0a0a); }
+.wt-card.unlocked .class-icon { border-color: #00C851; background: #00C851; box-shadow: 0 0 8px #00C851; }
+.wt-card.can-research .card-visual { border-color: #ffbb33; background: linear-gradient(135deg, rgba(60, 40, 0, 0.8), #0a0a0a); }
+.wt-card.can-research .class-icon { border-color: #ffbb33; box-shadow: 0 0 8px #ffbb33; }
+.wt-card.locked .card-visual { opacity: 0.5; border-style: dashed; border-color: #444; background: #0f0f0f; cursor: not-allowed; }
+.wt-card.premium .card-visual { border-color: #ffaa00; background: linear-gradient(135deg, #2b2200, #0a0a0a); }
+.wt-card.premium span { color: #ffaa00; }
+
+/* 5. ЛИНИИ (СТРЕЛКИ) - UPDATE V12.5 */
+
+/* Короткая стрелка (внутри ранга) */
+.has-arrow-short::after {
+    content: ''; position: absolute; top: 100%; left: 50%; margin-left: -1px;
+    width: 2px; 
+    height: 100px; 
+    background: #333; 
+    z-index: -5; 
+}
+
+/* Длинная стрелка (стандартный переход) */
+.has-arrow-long::after {
+    content: ''; position: absolute; top: 100%; left: 50%; margin-left: -1px;
+    width: 2px; 
+    height: 300px; 
+    background: #333; 
+    z-index: -5;
+}
+
+/* --- НОВОЕ: СРЕДНЯЯ (450px) --- */
+.has-arrow-mid::after {
+    content: ''; position: absolute; top: 100%; left: 50%; margin-left: -1px;
+    width: 2px; 
+    height: 450px; /* Меньше чем Mega, но больше чем Long */
+    background: #333; 
+    z-index: -5;
+}
+
+/* СУПЕР ДЛИННАЯ (600px) */
+.has-arrow-mega::after {
+    content: ''; position: absolute; top: 100%; left: 50%; margin-left: -1px;
+    width: 2px; 
+    height: 600px; 
+    background: #333; 
+    z-index: -5;
+}
+
+/* ЦВЕТА ДЛЯ ВСЕХ ТИПОВ СТРЕЛОК */
+.wt-card.unlocked.has-arrow-short::after, 
+.wt-card.unlocked.has-arrow-long::after,
+.wt-card.unlocked.has-arrow-mid::after,  /* <-- Добавил сюда */
+.wt-card.unlocked.has-arrow-mega::after { background: #00C851; box-shadow: 0 0 5px #00C851; }
+
+.wt-card.can-research.has-arrow-short::after, 
+.wt-card.can-research.has-arrow-long::after,
+.wt-card.can-research.has-arrow-mid::after, /* <-- Добавил сюда */
+.wt-card.can-research.has-arrow-mega::after { background: #ffbb33; box-shadow: 0 0 5px #ffbb33; }
+
+/* 6. ПАНЕЛЬ ИНФОРМАЦИИ (REDESIGN V2) */
+.tank-details-panel {
+    position: fixed; top: 0; right: -600px; /* Спрятана */
+    width: 500px; height: 100vh;
+    background: #0b0b0b; 
+    border-left: 1px solid #333;
+    box-shadow: -50px 0 100px rgba(0,0,0,0.9);
+    display: flex; flex-direction: column;
+    z-index: 5000;
+    transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* style/workshop.css */
+
+/* Убеждаемся, что панель не уходит под шапку сайта */
+.tank-details-panel {
+    z-index: 10000 !important; /* Выше чем .main-header (1001) */
+}
+
+.panel-close-btn {
+    position: absolute; 
+    top: 25px; /* Немного ниже, чтобы не сливалось с краем */
+    right: 25px;
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid var(--accent) !important;
+    color: #fff !important;
+    padding: 10px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 10001 !important; /* Гарантированный верхний слой */
+    text-transform: uppercase;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: 0.3s;
+}
+
+.panel-close-btn:hover {
+    background: var(--accent) !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px var(--accent);
+}
+
+.panel-close-btn:active {
+    transform: translateY(0);
+}
+
+/* Шапка */
+.panel-header {
+    height: 280px; position: relative;
+    background: #111; border-bottom: 4px solid var(--accent);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 30px;
+    overflow: hidden;
+}
+.panel-img-bg {
+    position: absolute; inset: 0; 
+    background-image: url('../img/bg_ground.jpg'); /* Дефолтный фон */
+    background-size: cover; background-position: center;
+    opacity: 0.6; filter: grayscale(20%); z-index: 0;
+    transition: 5s transform ease-out;
+}
+.tank-details-panel.open .panel-img-bg { transform: scale(1.1); }
+
+.panel-header-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, #0b0b0b 10%, transparent 100%);
+    z-index: 1;
+}
+
+.panel-title-box { position: relative; z-index: 2; }
+.panel-title-box h2 {
+    font-family: 'Orbitron'; font-size: 36px; color: #fff; margin: 5px 0 0;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.8); line-height: 1;
+    text-transform: uppercase; letter-spacing: 1px;
+}
+.class-badge {
+    display: inline-block; background: var(--accent); color: #000;
+    padding: 4px 8px; font-size: 11px; font-weight: 800;
+    text-transform: uppercase; font-family: 'Orbitron';
+    border-radius: 2px; box-shadow: 0 0 10px var(--accent);
+}
+
+/* Контент */
+.panel-content { padding: 30px; flex-grow: 1; overflow-y: auto; background: #0b0b0b; }
+.panel-desc {
+    color: #bbb; font-size: 14px; line-height: 1.6; margin-bottom: 40px;
+    border-left: 3px solid #333; padding-left: 15px; font-style: italic;
+}
+
+/* Сетка характеристик */
+.stats-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    background: rgba(255,255,255,0.03); border: 1px solid #333;
+    padding: 15px; border-radius: 4px; position: relative; overflow: hidden;
+    transition: 0.2s;
+}
+.stat-box:hover { background: rgba(255,255,255,0.06); border-color: #555; }
+
+.stat-label { font-size: 10px; color: #666; font-weight: 700; margin-bottom: 5px; }
+.stat-value { font-family: 'Orbitron'; font-size: 16px; color: #fff; font-weight: 700; }
+.stat-bar {
+    height: 3px; width: 100%; background: #222; margin-top: 10px; border-radius: 2px;
+}
+.stat-bar div { height: 100%; background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+
+/* Футер / Действия */
+.panel-actions {
+    padding: 30px; background: #080808; border-top: 1px solid #222;
+    display: flex; flex-direction: column; gap: 20px;
+}
+
+.price-container { display: flex; justify-content: space-between; align-items: flex-end; }
+.price-label { font-size: 11px; color: #555; font-weight: 700; letter-spacing: 1px; }
+.price-val { font-family: 'Orbitron'; font-size: 28px; color: var(--accent); font-weight: 700; text-shadow: 0 0 15px rgba(255, 157, 0, 0.3); }
+
+.research-btn {
+    width: 100%; padding: 20px;
+    background: linear-gradient(90deg, var(--accent), #ffbb33);
+    border: none; color: #000;
+    font-family: 'Orbitron'; font-weight: 900; font-size: 18px; letter-spacing: 2px;
+    cursor: pointer; text-transform: uppercase;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: 0.2s; position: relative; overflow: hidden;
+}
+
+.research-btn:hover {
+    transform: translateY(-2px); box-shadow: 0 5px 30px rgba(255, 157, 0, 0.4);
+    filter: brightness(1.1);
+}
+.research-btn:active { transform: translateY(1px); }
+
+/* Состояние: Куплено / Недоступно */
+.research-btn:disabled {
+    background: #222; color: #555; cursor: not-allowed; box-shadow: none;
+}
+.tank-details-panel.open { right: 0; }
+.close-panel { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; z-index: 10; }
+.panel-header { height: 250px; position: relative; background: #111; border-bottom: 2px solid #ffbb33; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+.panel-img-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.6; filter: grayscale(50%); z-index: 0; }
+.panel-header-content { position: relative; z-index: 1; text-shadow: 0 2px 10px black; }
+.panel-header h2 { font-family: 'Orbitron'; font-size: 32px; color: #fff; margin: 0; }
+.class-badge { color: #ffbb33; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.panel-content { padding: 30px; flex-grow: 1; overflow-y: auto; }
+.panel-desc { color: #aaa; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
+.panel-stats { background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 4px; padding: 15px; }
+.stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 14px; }
+.stat-row:last-child { border: none; }
+.stat-row span { color: #888; }
+.stat-row strong { color: #ddd; font-family: 'Orbitron'; }
+.panel-actions { padding: 30px; background: #0a0a0a; border-top: 1px solid #333; }
+.cost-block { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.cost-block span { font-size: 12px; color: #666; }
+.price-val { font-size: 24px; font-family: 'Orbitron'; color: #ffbb33; font-weight: 700; }
+.research-btn { width: 100%; padding: 18px; background: #ffbb33; border: none; color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 16px; cursor: pointer; clip-path: polygon(15px 0, 100% 0, 100% 100%, 0 100%, 0 15px); transition: 0.2s; }
+.research-btn:hover { background: #fff; box-shadow: 0 0 20px #ffbb33; }
+.research-btn:disabled { background: #333; color: #555; cursor: not-allowed; box-shadow: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

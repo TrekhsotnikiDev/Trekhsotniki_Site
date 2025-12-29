@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мастерская | Trehsotniki</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/workshop.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="workshop-page"> 
+
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <div class="top-left-links">
+                <a href="https://store.steampowered.com/app/552100/Brick_Rigs/" target="_blank"><img src="img/br_logo.png" class="steam-logo"></a>
+                <a href="store.html">Премиум магазин</a>
+                <a href="support.html">Центр поддержки</a>
+                <a href="https://discord.gg/8zg4FYbn" target="_blank"><img src="img/icons8-discord-48.png" class="discord-logo"></a>
+            </div>
+            <div class="top-right-stats">
+                <a href="profile.html">Профиль</a>
+                <div class="stat gold-stat"><img src="img/Zoloto2.png"> <span>...</span></div>
+                <div class="stat xp-stat"><img src="img/xp_ico.png"> <span>...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand-zone">
+                <button id="back-btn" class="nav-back-btn" style="display: none;">
+                    ← НАЗАД
+                </button>
+
+                <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:15px; color:inherit;">
+                    <img src="img/trehsotniki_logo.png" class="main-logo">
+                    <span class="brand-name">TREHSOTNIKI</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <div class="nav-item">
+                    <span>ПРОЕКТ</span> <img src="img/menu_arrow.png" class="arrow">
+                    <div class="dropdown">
+                        <a href="news.html">Новости</a>
+                        <a href="maps.html">Карты</a>
+                        <a href="workshop.html">Мастерская</a>
+                        <a href="https://drive.google.com/drive/folders/13dSwBa0I4KRNHFESoOlXxc-BbAD4x64F" target="_blank" style="color: #00C851;">Скачать моды</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <span>РУКОВОДСТВА</span> <img src="img/menu_arrow.png" class="arrow">
+                    <div class="dropdown">
+                        <a href="newbie.html">Новичку</a>
+                        <a href="economy.html">Экономика</a>
+                    </div>
+                </div>
+            </nav>
+            <div class="auth-buttons"></div>
+        </div>
+    </header>
+
+    <div class="workshop-wrapper">
+        
+        <div id="screen-type" class="selection-screen">
+            <h1 class="screen-title">ВЫБЕРИТЕ РОД ВОЙСК</h1>
+            <div class="selection-grid">
+                <div class="select-card" onclick="selectType('ground')">
+                    <div class="card-bg" style="background-image: url('img/bg_ground.jpg'); background-color:#222;"></div>
+                    <h2>ЗЕМЛЯ</h2>
+                    <p>Танки и бронетехника</p>
+                </div>
+                <div class="select-card locked" onclick="alert('Авиация в разработке!')">
+                    <div class="card-bg" style="background-image: url('img/bg_air.jpg'); background-color:#111;"></div>
+                    <h2>ВОЗДУХ</h2>
+                    <p>В разработке</p>
+                    <div class="lock-overlay">🔒</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-nation" class="selection-screen" style="display: none;">
+            <h1 class="screen-title">ВЫБЕРИТЕ НАЦИЮ</h1>
+            <div class="nations-grid"></div>
+        </div>
+
+        <div id="screen-tree" class="tree-screen" style="display: none;">
+            <div class="tree-container">
+                <div class="tree-inner" id="tree-container"></div>
+            </div>
+        </div>
+
+        <div class="tank-details-panel" id="tank-panel">
+    <button class="panel-close-btn" onclick="closePanel()">ЗАКРЫТЬ [ESC]</button>
+    
+    <div class="panel-header">
+        <div class="panel-img-bg"></div> 
+        <div class="panel-header-overlay"></div> <div class="panel-title-box">
+            <span class="class-badge" id="panel-class">ТЯЖЕЛЫЙ ТАНК</span>
+            <h2 id="panel-name">IS-7 Object 260</h2>
+        </div>
+    </div>
+    
+    <div class="panel-content">
+        <div class="panel-desc">
+            <p id="panel-desc">Описание отсутствует...</p>
+        </div>
+        
+        <div class="stats-grid">
+    <div class="stat-box">
+        <div class="stat-label">БРОНИРОВАНИЕ</div>
+        <div class="stat-value" id="stat-armor">-</div>
+        <div class="stat-bar"><div id="bar-armor" style="width: 0%"></div></div> 
+    </div>
+    <div class="stat-box">
+        <div class="stat-label">КАЛИБР</div>
+        <div class="stat-value" id="stat-gun">-</div>
+        <div class="stat-bar"><div id="bar-gun" style="width: 0%"></div></div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-label">МОЩНОСТЬ</div>
+        <div class="stat-value" id="stat-engine">-</div>
+        <div class="stat-bar"><div id="bar-engine" style="width: 0%"></div></div>
+    </div>
+</div>
+    </div>
+
+    <div class="panel-actions">
+        <div class="price-container">
+            <div class="price-label">СТОИМОСТЬ ИССЛЕДОВАНИЯ</div>
+            <div class="price-val" id="panel-price">150,000 XP</div>
+        </div>
+        <button class="research-btn" id="buy-btn">ИССЛЕДОВАТЬ</button>
+    </div>
+</div>
+
+    </div>
+
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-window">
+            <button class="close-modal" onclick="closeModal()">✕</button>
+            <div class="modal-tabs"><button id="tab-login" class="active" onclick="switchTab('login')">ВХОД</button><button id="tab-register" onclick="switchTab('register')">РЕГИСТРАЦИЯ</button></div>
+            <form id="form-login" class="auth-form active"><div class="input-group"><label>EMAIL</label><input type="email"></div><div class="input-group"><label>ПАРОЛЬ</label><input type="password"></div><button type="submit" class="submit-btn">ВОЙТИ</button></form>
+            <form id="form-register" class="auth-form"><div class="input-group"><label>НИК</label><input type="text"></div><div class="input-group"><label>EMAIL</label><input type="email"></div><div class="input-group"><label>ПАРОЛЬ</label><input type="password"></div><button type="submit" class="submit-btn">СОЗДАТЬ</button></form>
+        </div>
+    </div>
+
+    <script type="module" src="js/workshop.js"></script>
+</body>
+</html>
