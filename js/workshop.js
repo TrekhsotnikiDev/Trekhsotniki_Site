@@ -56,10 +56,12 @@ window.closeModal = function() {
     document.getElementById('auth-modal')?.classList.remove('open');
 };
 
-// --- АВТОРИЗАЦИЯ ---
+// --- СИНХРОНИЗАЦИЯ (РЕЖИМ НЕВИДИМКИ) ---
 onAuthStateChanged(auth, (user) => {
     const authButtons = document.querySelector('.auth-buttons');
+    
     if (user) {
+        // === ЕСЛИ ПОЛЬЗОВАТЕЛЬ ЕСТЬ ===
         currentUser = user;
         const userRef = doc(db, "users", user.uid);
 
@@ -68,16 +70,11 @@ onAuthStateChanged(auth, (user) => {
                 const data = docSnap.data();
                 userTanks = data.tanks || [];
                 
-                // Проверка стартового набора
+                // Проверка стартовых танков
                 const needsUpdate = STARTER_TANKS.some(t => !userTanks.includes(t));
                 if (needsUpdate) await updateDoc(userRef, { tanks: arrayUnion(...STARTER_TANKS) });
 
-                // Обновление UI
-                const goldEl = document.querySelector('.gold-stat span');
-                const xpEl = document.querySelector('.xp-stat span');
-                if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
-                if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
-                
+                // Обновляем шапку
                 if (authButtons) {
                     authButtons.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="location.href='profile.html'">
@@ -88,15 +85,33 @@ onAuthStateChanged(auth, (user) => {
                             <div style="width:35px; height:35px; background:#333; border-radius:50%; border:1px solid #ff9d00; background-image:url('./img/gold_ico.jpg'); background-size:cover;"></div>
                         </div>`;
                 }
+                
+                // Обновляем валюту
+                const goldEl = document.querySelector('.gold-stat span');
+                const xpEl = document.querySelector('.xp-stat span');
+                if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
+                if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
+
+                // Если дерево было открыто — обновляем замки
                 if (currentNation) renderTechTree(currentNation);
+
+                // === ГЛАВНЫЙ МОМЕНТ: ДАННЫЕ ГОТОВЫ -> ПОКАЗЫВАЕМ ИНТЕРФЕЙС ===
+                document.body.classList.add('ready');
             }
         });
     } else {
+        // === ЕСЛИ ЭТО ГОСТЬ ===
+        currentUser = null;
+        userTanks = [];
+        
         if (authButtons) {
             authButtons.innerHTML = `
                 <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
                 <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>`;
         }
+        
+        // Для гостя тоже показываем интерфейс (но с кнопками входа)
+        document.body.classList.add('ready');
     }
 });
 
@@ -394,3 +409,4 @@ document.addEventListener('keydown', (e) => {
     }
 });
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
