@@ -6,6 +6,8 @@ import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, onSnapshot } 
 
 // --- НОВЫЙ ИМПОРТ БАЗЫ ДАННЫХ ---
 import { FULL_DB } from './tanks_db.js';
+// 1. Добавляем setPersistence и browserLocalPersistence в импорт
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWqbVh-eFA0A9uPgAf_q8fg4jP7rNnQDk",
@@ -20,6 +22,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+// 2. ПРИНУДИТЕЛЬНО ВКЛЮЧАЕМ LOCAL STORAGE
+// Добавь этот блок сразу после инициализации auth
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    // Персистентность включена, теперь слушаем юзера
+    onAuthStateChanged(auth, (user) => {
+        // ... твой старый код внутри onAuthStateChanged ...
+        const authButtons = document.querySelector('.auth-buttons');
+        if (user) {
+            // ... код для залогиненного ...
+        } else {
+            // ... код для гостя ...
+        }
+    });
+  })
+  .catch((error) => {
+    console.error("Ошибка сохранения сессии:", error);
+  });
 
 // --- ГЛОБАЛЬНЫЕ КОНСТАНТЫ ---
 const NATIONS_LIST = [
@@ -56,12 +76,10 @@ window.closeModal = function() {
     document.getElementById('auth-modal')?.classList.remove('open');
 };
 
-// --- СИНХРОНИЗАЦИЯ (РЕЖИМ НЕВИДИМКИ) ---
+// --- АВТОРИЗАЦИЯ ---
 onAuthStateChanged(auth, (user) => {
     const authButtons = document.querySelector('.auth-buttons');
-    
     if (user) {
-        // === ЕСЛИ ПОЛЬЗОВАТЕЛЬ ЕСТЬ ===
         currentUser = user;
         const userRef = doc(db, "users", user.uid);
 
@@ -70,11 +88,16 @@ onAuthStateChanged(auth, (user) => {
                 const data = docSnap.data();
                 userTanks = data.tanks || [];
                 
-                // Проверка стартовых танков
+                // Проверка стартового набора
                 const needsUpdate = STARTER_TANKS.some(t => !userTanks.includes(t));
                 if (needsUpdate) await updateDoc(userRef, { tanks: arrayUnion(...STARTER_TANKS) });
 
-                // Обновляем шапку
+                // Обновление UI
+                const goldEl = document.querySelector('.gold-stat span');
+                const xpEl = document.querySelector('.xp-stat span');
+                if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
+                if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
+                
                 if (authButtons) {
                     authButtons.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="location.href='profile.html'">
@@ -85,33 +108,15 @@ onAuthStateChanged(auth, (user) => {
                             <div style="width:35px; height:35px; background:#333; border-radius:50%; border:1px solid #ff9d00; background-image:url('./img/gold_ico.jpg'); background-size:cover;"></div>
                         </div>`;
                 }
-                
-                // Обновляем валюту
-                const goldEl = document.querySelector('.gold-stat span');
-                const xpEl = document.querySelector('.xp-stat span');
-                if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
-                if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
-
-                // Если дерево было открыто — обновляем замки
                 if (currentNation) renderTechTree(currentNation);
-
-                // === ГЛАВНЫЙ МОМЕНТ: ДАННЫЕ ГОТОВЫ -> ПОКАЗЫВАЕМ ИНТЕРФЕЙС ===
-                document.body.classList.add('ready');
             }
         });
     } else {
-        // === ЕСЛИ ЭТО ГОСТЬ ===
-        currentUser = null;
-        userTanks = [];
-        
         if (authButtons) {
             authButtons.innerHTML = `
                 <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
                 <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>`;
         }
-        
-        // Для гостя тоже показываем интерфейс (но с кнопками входа)
-        document.body.classList.add('ready');
     }
 });
 
@@ -409,4 +414,3 @@ document.addEventListener('keydown', (e) => {
     }
 });
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
-
