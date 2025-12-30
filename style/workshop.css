@@ -80,9 +80,17 @@ body {
 .tree-container::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
 .tree-inner {
-    display: grid !important; grid-template-columns: repeat(4, 300px); grid-auto-rows: min-content; 
-    column-gap: 60px; row-gap: 0; padding-bottom: 100px; margin: 0 auto;
+    display: grid !important;
+    /* Автоматические колонки по 300px */
+    grid-template-columns: repeat(auto-fill, 300px); 
+    grid-auto-rows: min-content; 
+    column-gap: 20px; row-gap: 50px;
+    padding-bottom: 100px; margin: 0 auto;
+    padding-top: 0px; /* Добавил отступ сверху, раз заголовков нет */
 }
+
+/* Скрываем старые заголовки, если они вдруг сгенерируются */
+.branch-title { display: none; }
 
 .branch-title {
     text-align: center; font-family: 'Orbitron'; color: #444; font-size: 18px; margin-bottom: 20px; text-transform: uppercase;
@@ -100,8 +108,19 @@ body {
     background: rgba(255,255,255,0.02);
 }
 .rank-content {
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; 
-    width: 100%; height: 100%; padding-left: 30px; gap: 50px; padding-bottom: 20px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-end; 
+    width: 100%; 
+    height: 100%; 
+    
+    /* БЫЛО: padding-left: 30px; */
+    /* СТАЛО: Увеличиваем отступ, чтобы цифры Б.Р. не наезжали на линию */
+    padding-left: 70px; 
+    
+    gap: 60px; 
+    padding-bottom: 20px;
     overflow: visible !important; 
 }
 .br-row { display: flex; align-items: center; gap: 40px; position: relative; }
@@ -111,34 +130,77 @@ body {
 .wt-card {
     width: 220px; height: 80px; position: relative;
     display: flex; justify-content: center; align-items: center;
-    z-index: 20; /* ПОДНЯЛ Z-INDEX, чтобы точно перекрывать линии */
-    
-    /* --- РЕШЕНИЕ: НЕВИДИМАЯ КОРОБКА --- */
+    z-index: 20; 
     background-color: #050505; 
 }
 
 .card-visual {
     position: absolute; inset: 0; background: #141414; border: 1px solid #333;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
-    transition: 0.2s; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: 0.2s; 
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
     z-index: 10;
 }
-.card-visual::before { content: ''; position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.4; filter: grayscale(100%) contrast(1.2); transition: 0.3s; z-index: 0; }
-.card-visual::before { background-image: url('../img/background_main_menu.png'); }
-.wt-card span { font-family: 'Orbitron'; font-size: 13px; color: #aaa; text-transform: uppercase; z-index: 2; text-shadow: 0 2px 4px black; }
-.class-icon { width: 10px; height: 10px; border: 2px solid #555; transform: rotate(45deg); margin-right: 10px; z-index: 2; background: rgba(0,0,0,0.6); }
-.wt-card:hover .card-visual { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.15); z-index: 10; }
-.wt-card:hover .card-visual::before { opacity: 0.8; filter: grayscale(0%); }
-.wt-card:hover span { color: #fff; }
+/* Фон картинки внутри карточки */
+.card-visual::before { 
+    content: ''; position: absolute; inset: 0; 
+    background-image: url('../img/background_main_menu.png'); 
+    background-size: cover; background-position: center; 
+    opacity: 0.4; filter: grayscale(100%) contrast(1.2); 
+    transition: 0.3s; z-index: 0; 
+}
 
-/* Статусы */
+/* --- НОВЫЕ СТИЛИ ДЛЯ ИКОНКИ И ТЕКСТА --- */
+.visual-stack {
+    position: relative; 
+    z-index: 2; /* Чтобы текст был выше фона */
+    display: flex; 
+    flex-direction: column; /* Выстраиваем в колонку (друг над другом) */
+    align-items: center; 
+    text-align: center;
+    gap: 4px; /* Расстояние между значком и текстом */
+}
+
+.type-icon {
+    font-size: 20px; /* Размер значка */
+    line-height: 0.5;
+    text-shadow: 0 2px 5px rgba(0,0,0,1); /* Тень для читаемости */
+    color: #888; /* Цвет по умолчанию */
+    transition: 0.3s;
+}
+
+.tank-name {
+    font-family: 'Orbitron'; 
+    font-size: 12px; 
+    color: #aaa; 
+    text-transform: uppercase; 
+    text-shadow: 0 2px 4px black;
+    transition: 0.3s;
+}
+
+/* --- ЦВЕТА ПРИ НАВЕДЕНИИ И СТАТУСАХ --- */
+
+/* Ховер */
+.wt-card:hover .card-visual { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.15); }
+.wt-card:hover .card-visual::before { opacity: 0.8; filter: grayscale(0%); }
+.wt-card:hover .tank-name { color: #fff; transform: scale(1.2);}
+.wt-card:hover .type-icon { color: #fff; transform: scale(1.2); }
+
+/* Статус: ОТКРЫТО (Зеленый) */
 .wt-card.unlocked .card-visual { border-color: #00C851; background: linear-gradient(135deg, rgba(0, 40, 0, 0.9), #0a0a0a); }
-.wt-card.unlocked .class-icon { border-color: #00C851; background: #00C851; box-shadow: 0 0 8px #00C851; }
+.wt-card.unlocked .type-icon { color: #00C851; text-shadow: 0 0 8px #00C851; }
+.wt-card.unlocked .tank-name { color: #eee; }
+
+/* Статус: ДОСТУПНО (Желтый) */
 .wt-card.can-research .card-visual { border-color: #ffbb33; background: linear-gradient(135deg, rgba(60, 40, 0, 0.8), #0a0a0a); }
-.wt-card.can-research .class-icon { border-color: #ffbb33; box-shadow: 0 0 8px #ffbb33; }
-.wt-card.locked .card-visual { opacity: 0.5; border-style: dashed; border-color: #444; background: #0f0f0f; cursor: not-allowed; }
+.wt-card.can-research .type-icon { color: #ffbb33; text-shadow: 0 0 8px #ffbb33; }
+
+/* Статус: ПРЕМИУМ (Золотой) */
 .wt-card.premium .card-visual { border-color: #ffaa00; background: linear-gradient(135deg, #2b2200, #0a0a0a); }
-.wt-card.premium span { color: #ffaa00; }
+.wt-card.premium .type-icon, .wt-card.premium .tank-name { color: #ffaa00; }
+
+/* Статус: ЗАКРЫТО */
+.wt-card.locked .card-visual { opacity: 0.5; border-style: dashed; border-color: #444; background: #0f0f0f; cursor: not-allowed; }
 
 /* 5. ЛИНИИ (СТРЕЛКИ) - UPDATE V12.5 */
 
@@ -155,7 +217,7 @@ body {
 .has-arrow-long::after {
     content: ''; position: absolute; top: 100%; left: 50%; margin-left: -1px;
     width: 2px; 
-    height: 300px; 
+    height: 100px; 
     background: #333; 
     z-index: -5;
 }
@@ -164,7 +226,7 @@ body {
 .has-arrow-mid::after {
     content: ''; position: absolute; top: 100%; left: 50%; margin-left: -1px;
     width: 2px; 
-    height: 450px; /* Меньше чем Mega, но больше чем Long */
+    height: 100px; /* Меньше чем Mega, но больше чем Long */
     background: #333; 
     z-index: -5;
 }
@@ -173,7 +235,7 @@ body {
 .has-arrow-mega::after {
     content: ''; position: absolute; top: 100%; left: 50%; margin-left: -1px;
     width: 2px; 
-    height: 600px; 
+    height: 100px; 
     background: #333; 
     z-index: -5;
 }
@@ -328,6 +390,54 @@ body {
 .research-btn:disabled {
     background: #222; color: #555; cursor: not-allowed; box-shadow: none;
 }
+
+/* БЛОК ПРЕДПРОСМОТРА В ПАНЕЛИ */
+.panel-preview-box {
+    margin-top: 25px;       /* Отступ сверху от статов */
+    width: 100%;
+    height: 220px;          /* Высота картинки */
+    background: #000;
+    border: 1px solid #333;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+/* Сама картинка */
+.panel-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* Картинка заполнит блок, обрезав лишнее, но не исказившись */
+    opacity: 0.8;
+    transition: 0.5s;
+    z-index: 1;
+}
+
+/* Эффект при наведении на блок */
+.panel-preview-box:hover img {
+    opacity: 1;
+    transform: scale(1.05); /* Легкое приближение */
+}
+
+/* Декоративная сетка поверх картинки (для стиля) */
+.preview-border {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 80%, rgba(0,0,0,0.8));
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* Выравнивание ТОЛЬКО для 1-го ранга */
+.rank-block.rank-center .rank-content {
+    justify-content: center !important; /* Центрируем по вертикали */
+    padding-bottom: 0 !important;       /* Убираем нижний отступ, если он мешает */
+}
+
 .tank-details-panel.open { right: 0; }
 .close-panel { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; z-index: 10; }
 .panel-header { height: 250px; position: relative; background: #111; border-bottom: 2px solid #ffbb33; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
