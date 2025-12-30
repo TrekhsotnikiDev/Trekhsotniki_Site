@@ -1,13 +1,12 @@
-/* js/workshop.js - V14.0 FREE LINES ARCHITECTURE */
+/* js/workshop.js - V14.1 FIX LOGIN SESSION */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// Добавили setPersistence и browserLocalPersistence в импорт
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- НОВЫЙ ИМПОРТ БАЗЫ ДАННЫХ ---
+// Импорт базы
 import { FULL_DB } from './tanks_db.js';
-// 1. Добавляем setPersistence и browserLocalPersistence в импорт
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWqbVh-eFA0A9uPgAf_q8fg4jP7rNnQDk",
@@ -22,103 +21,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-// 2. ПРИНУДИТЕЛЬНО ВКЛЮЧАЕМ LOCAL STORAGE
-// Добавь этот блок сразу после инициализации auth
+
+// === ГЛАВНОЕ ИСПРАВЛЕНИЕ ===
+// Принудительно включаем LOCAL STORAGE перед тем, как слушать юзера
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
-    // Персистентность включена, теперь слушаем юзера
-    onAuthStateChanged(auth, (user) => {
-        // ... твой старый код внутри onAuthStateChanged ...
-        const authButtons = document.querySelector('.auth-buttons');
-        if (user) {
-            // ... код для залогиненного ...
-        } else {
-            // ... код для гостя ...
-        }
-    });
+     // Ничего не делаем, просто ждем установки
+     console.log("Persistence set to LOCAL");
   })
   .catch((error) => {
-    console.error("Ошибка сохранения сессии:", error);
+     console.error("Auth Persistence Error:", error);
   });
+// ============================
 
-// --- ГЛОБАЛЬНЫЕ КОНСТАНТЫ ---
-const NATIONS_LIST = [
-    {id:'ussr', name:'СССР'}, {id:'germany', name:'Германия'}, {id:'usa', name:'США'}, 
-    {id:'uk', name:'Британия'}, {id:'france', name:'Франция'}, {id:'japan', name:'Япония'}
-];
-
-const STARTER_TANKS = ['fiat', 'm1928', 't18_29', 't18', 'filler', 'st_pz_1', 'st_pz_2', 'ltr_k', 'ltr_r', 't2_29', 't1e1', 't1', 'mk1', 'mk1cs', 'mk2', 'mk3', 'nc31', 'nc27', 'ft', 'char_d1', 'otsu', 'type89', 'ko'];
-
-// Элементы UI
-const screenType = document.getElementById('screen-type');
-const screenNation = document.getElementById('screen-nation');
-const screenTree = document.getElementById('screen-tree');
-const backBtn = document.getElementById('back-btn');
-const treeContainer = document.getElementById('tree-container');
-
-let currentUser = null;
-let userTanks = []; 
-let currentNation = null;
-
-// --- ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДЛЯ HTML) ---
-window.openModal = function(mode) {
-    const modal = document.getElementById('auth-modal');
-    if (!modal) return;
-    modal.classList.add('open');
-    const isLogin = mode === 'login';
-    document.getElementById('form-login')?.classList.toggle('active', isLogin);
-    document.getElementById('form-register')?.classList.toggle('active', !isLogin);
-    document.getElementById('tab-login')?.classList.toggle('active', isLogin);
-    document.getElementById('tab-register')?.classList.toggle('active', !isLogin);
-};
-
-window.closeModal = function() {
-    document.getElementById('auth-modal')?.classList.remove('open');
-};
-
-// --- АВТОРИЗАЦИЯ ---
-onAuthStateChanged(auth, (user) => {
-    const authButtons = document.querySelector('.auth-buttons');
-    if (user) {
-        currentUser = user;
-        const userRef = doc(db, "users", user.uid);
-
-        onSnapshot(userRef, async (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                userTanks = data.tanks || [];
-                
-                // Проверка стартового набора
-                const needsUpdate = STARTER_TANKS.some(t => !userTanks.includes(t));
-                if (needsUpdate) await updateDoc(userRef, { tanks: arrayUnion(...STARTER_TANKS) });
-
-                // Обновление UI
-                const goldEl = document.querySelector('.gold-stat span');
-                const xpEl = document.querySelector('.xp-stat span');
-                if(goldEl) goldEl.innerText = (data.gold || 0).toLocaleString();
-                if(xpEl) xpEl.innerText = (data.xp || 0).toLocaleString();
-                
-                if (authButtons) {
-                    authButtons.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="location.href='profile.html'">
-                            <div style="text-align:right; line-height:1.2;">
-                                <div style="font-size:10px; color:#888; font-weight:700;">КОМАНДИР</div>
-                                <div style="color:#ffbb33; font-family:'Orbitron'; font-size:14px;">${data.nickname || user.email.split('@')[0]}</div>
-                            </div>
-                            <div style="width:35px; height:35px; background:#333; border-radius:50%; border:1px solid #ff9d00; background-image:url('./img/gold_ico.jpg'); background-size:cover;"></div>
-                        </div>`;
-                }
-                if (currentNation) renderTechTree(currentNation);
-            }
-        });
-    } else {
-        if (authButtons) {
-            authButtons.innerHTML = `
-                <button class="login-btn-ghost" onclick="openModal('login')">ВХОД</button>
-                <button class="reg-btn-modern" onclick="openModal('register')">РЕГИСТРАЦИЯ</button>`;
-        }
-    }
-});
+// ... Дальше идет твой код (const NATIONS_LIST = ...), его не трогай
 
 // --- ОБРАБОТКА ФОРМ ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -414,3 +330,4 @@ document.addEventListener('keydown', (e) => {
     }
 });
 function toRoman(num) { return {1:'I',2:'II',3:'III',4:'IV',5:'V'}[num]; }
+
