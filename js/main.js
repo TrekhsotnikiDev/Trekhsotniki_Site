@@ -5,7 +5,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDNo6sI41rRfupv-aV33z037Sftn1tuUkM",
+  apiKey: "AIzaSyDWqbVh-eFA0A9uPgAf_q8fg4jP7rNnQDk",
   authDomain: "trehsotniki-base.firebaseapp.com",
   projectId: "trehsotniki-base",
   storageBucket: "trehsotniki-base.firebasestorage.app",
@@ -209,13 +209,9 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Глобальные функции
-// Найти функцию openModal и заменить на эту:
 window.openModal = function(mode) {
     const modal = document.getElementById('auth-modal');
-    if (modal) {
-        modal.classList.add('open');
-        window.switchTab(mode);
-    }
+    if (modal) { modal.classList.add('open'); window.switchTab(mode); }
 };
 window.closeModal = function() {
     const modal = document.getElementById('auth-modal');
@@ -247,9 +243,4 @@ function initAnimations() {
         entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
 }
-// Добавь эти строки в самый конец файла main.js:
-window.closeModal = closeModal;
-window.switchTab = switchTab;
-
